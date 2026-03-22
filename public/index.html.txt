@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Referral Manager</title>
+</head>
+<body>
+  <h1>Referral Manager</h1>
+
+  <h3>Add Referral</h3>
+  <input id="title" placeholder="App name"><br>
+  <input id="link" placeholder="Referral link"><br>
+  <input id="reward" placeholder="$ reward"><br>
+  <button onclick="addRef()">Add</button>
+
+  <h3>Generate Posts</h3>
+  <button onclick="generate()">Generate Variations</button>
+
+  <ul id="output"></ul>
+
+<script>
+async function addRef() {
+  const data = {
+    title: document.getElementById("title").value,
+    link: document.getElementById("link").value,
+    reward: document.getElementById("reward").value
+  };
+
+  await fetch("/api/referrals", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+
+  alert("Saved!");
+}
+
+async function generate() {
+  const data = {
+    title: document.getElementById("title").value,
+    link: document.getElementById("link").value,
+    reward: document.getElementById("reward").value
+  };
+
+  const res = await fetch("/api/generate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+
+  const variations = await res.json();
+  const output = document.getElementById("output");
+  output.innerHTML = "";
+
+  variations.forEach(v => {
+    const li = document.createElement("li");
+    li.innerText = v;
+    li.onclick = () => navigator.clipboard.writeText(v);
+    output.appendChild(li);
+  });
+}
+</script>
+</body>
+</html>
